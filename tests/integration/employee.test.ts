@@ -265,4 +265,88 @@ describe('Employee CRUD', () => {
       expect(response.body.success).toBe(false);
     });
   });
+
+  describe('GET /api/salary-metrics/country/:country', () => {
+    it('should retrieve min, max, average salary for a country', async () => {
+      // Create employees in India
+      await request(app).post('/api/employees').send({
+        full_name: 'Emp 1',
+        job_title: 'Engineer',
+        country: 'India',
+        salary: 30000,
+      });
+      await request(app).post('/api/employees').send({
+        full_name: 'Emp 2',
+        job_title: 'Engineer',
+        country: 'India',
+        salary: 50000,
+      });
+      await request(app).post('/api/employees').send({
+        full_name: 'Emp 3',
+        job_title: 'Manager',
+        country: 'India',
+        salary: 70000,
+      });
+
+      const response = await request(app)
+        .get('/api/salary-metrics/country/India')
+        .timeout(2000);
+
+      const body: ApiResponse<SalaryMetricsByCountry> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.country).toBe('India');
+      expect(body.data!.min_salary).toBe(30000);
+      expect(body.data!.max_salary).toBe(70000);
+      expect(body.data!.avg_salary).toBe(50000);
+    });
+
+    it('should return 404 if no employees exist in the country', async () => {
+      const response = await request(app)
+        .get('/api/salary-metrics/country/Germany')
+        .timeout(2000);
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+    });
+  });
+
+  describe('GET /api/salary-metrics/job-title/:jobTitle', () => {
+    it('should retrieve average salary for a job title', async () => {
+      // Create employees with Job Title
+      await request(app).post('/api/employees').send({
+        full_name: 'Emp A',
+        job_title: 'Developer',
+        country: 'India',
+        salary: 40000,
+      });
+      await request(app).post('/api/employees').send({
+        full_name: 'Emp B',
+        job_title: 'Developer',
+        country: 'United States',
+        salary: 60000,
+      });
+
+      const response = await request(app)
+        .get('/api/salary-metrics/job-title/Developer')
+        .timeout(2000);
+
+      const body: ApiResponse<SalaryMetricsByJobTitle> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.job_title).toBe('Developer');
+      expect(body.data!.avg_salary).toBe(50000);
+    });
+
+    it('should return 404 if no employees exist with the job title', async () => {
+      const response = await request(app)
+        .get('/api/salary-metrics/job-title/Architect')
+        .timeout(2000);
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+    });
+  });
 });
