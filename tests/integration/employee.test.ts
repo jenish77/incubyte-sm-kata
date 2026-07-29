@@ -179,4 +179,90 @@ describe('Employee CRUD', () => {
       expect(response.body.success).toBe(false);
     });
   });
+
+  describe('GET /api/employees/:id/salary', () => {
+    it('should calculate salary for India employee (10% TDS)', async () => {
+      const createRes = await request(app).post('/api/employees').send({
+        full_name: 'Rahul Sharma',
+        job_title: 'Software Developer',
+        country: 'India',
+        salary: 50000,
+      });
+
+      const employeeId: number = createRes.body.data.id;
+
+      const response = await request(app)
+        .get(`/api/employees/${employeeId}/salary`)
+        .timeout(2000);
+
+      const body: ApiResponse<SalaryBreakdown> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.employee_id).toBe(employeeId);
+      expect(body.data!.gross_salary).toBe(50000);
+      expect(body.data!.tds_rate).toBe(0.10);
+      expect(body.data!.tds_deduction).toBe(5000);
+      expect(body.data!.net_salary).toBe(45000);
+    });
+
+    it('should calculate salary for US employee (12% TDS)', async () => {
+      const createRes = await request(app).post('/api/employees').send({
+        full_name: 'John Miller',
+        job_title: 'Manager',
+        country: 'United States',
+        salary: 100000,
+      });
+
+      const employeeId: number = createRes.body.data.id;
+
+      const response = await request(app)
+        .get(`/api/employees/${employeeId}/salary`)
+        .timeout(2000);
+
+      const body: ApiResponse<SalaryBreakdown> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.employee_id).toBe(employeeId);
+      expect(body.data!.gross_salary).toBe(100000);
+      expect(body.data!.tds_rate).toBe(0.12);
+      expect(body.data!.tds_deduction).toBe(12000);
+      expect(body.data!.net_salary).toBe(88000);
+    });
+
+    it('should calculate salary for other country employee (0% TDS)', async () => {
+      const createRes = await request(app).post('/api/employees').send({
+        full_name: 'Pierre Dupont',
+        job_title: 'Chef',
+        country: 'France',
+        salary: 60000,
+      });
+
+      const employeeId: number = createRes.body.data.id;
+
+      const response = await request(app)
+        .get(`/api/employees/${employeeId}/salary`)
+        .timeout(2000);
+
+      const body: ApiResponse<SalaryBreakdown> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.employee_id).toBe(employeeId);
+      expect(body.data!.gross_salary).toBe(60000);
+      expect(body.data!.tds_rate).toBe(0);
+      expect(body.data!.tds_deduction).toBe(0);
+      expect(body.data!.net_salary).toBe(60000);
+    });
+
+    it('should return 404 for salary calculation of non-existent employee', async () => {
+      const response = await request(app)
+        .get('/api/employees/999/salary')
+        .timeout(2000);
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+    });
+  });
 });
