@@ -9,7 +9,7 @@
     "test": "jest --verbose --forceExit",
     "test:unit": "jest --verbose --forceExit tests/unit",
     "test:integration": "jest --verbose --forceExit tests/integration",
-    "seed": "ts-node scripts/seed.ts"
+    "seed": "ts-node --transpile-only scripts/seed.ts"
   },
   "keywords": [],
   "author": "",
