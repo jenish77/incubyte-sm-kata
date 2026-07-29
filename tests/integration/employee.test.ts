@@ -108,4 +108,40 @@ describe('Employee CRUD', () => {
       expect(response.body.data).toHaveLength(0);
     });
   });
+
+  describe('PUT /api/employees/:id', () => {
+    it('should update an existing employee', async () => {
+      const createRes = await request(app).post('/api/employees').send({
+        full_name: 'Alice Johnson',
+        job_title: 'Engineer',
+        country: 'India',
+        salary: 55000,
+      });
+
+      const employeeId: number = createRes.body.data.id;
+
+      const response = await request(app)
+        .put(`/api/employees/${employeeId}`)
+        .send({ salary: 65000, job_title: 'Senior Engineer' })
+        .timeout(2000);
+
+      const body: ApiResponse<Employee> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.salary).toBe(65000);
+      expect(body.data!.job_title).toBe('Senior Engineer');
+      expect(body.data!.full_name).toBe('Alice Johnson');
+    });
+
+    it('should return 404 when updating non-existent employee', async () => {
+      const response = await request(app)
+        .put('/api/employees/999')
+        .send({ salary: 70000 })
+        .timeout(2000);
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+    });
+  });
 });
