@@ -46,8 +46,7 @@ describe('Employee Service Unit Tests', () => {
 
       expect(result).not.toBeNull();
       expect(result!.gross_salary).toBe(50000);
-      // We will introduce an intentional assertion failure here to check RED phase
-      expect(result!.net_salary).toBe(999999); // Intentional mismatch
+      expect(result!.net_salary).toBe(45000);
     });
   });
 });
