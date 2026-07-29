@@ -99,9 +99,33 @@ export async function calculateSalary(req: Request, res: Response, next: NextFun
 }
 
 export async function getSalaryMetricsByCountry(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const country = req.params.country;
+    const metrics = await employeeService.getSalaryMetricsByCountry(country);
+
+    if (!metrics) {
+      sendError(res, HTTP_STATUS.NOT_FOUND, MESSAGES.EMPLOYEE_NOT_FOUND);
+      return;
+    }
+
+    sendSuccess(res, HTTP_STATUS.OK, metrics, MESSAGES.METRICS_FETCHED);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function getAvgSalaryByJobTitle(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const jobTitle = req.params.jobTitle;
+    const metrics = await employeeService.getAvgSalaryByJobTitle(jobTitle);
+
+    if (!metrics) {
+      sendError(res, HTTP_STATUS.NOT_FOUND, MESSAGES.EMPLOYEE_NOT_FOUND);
+      return;
+    }
+
+    sendSuccess(res, HTTP_STATUS.OK, metrics, MESSAGES.METRICS_FETCHED);
+  } catch (error) {
+    next(error);
+  }
 }

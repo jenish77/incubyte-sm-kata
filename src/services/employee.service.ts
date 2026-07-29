@@ -54,11 +54,9 @@ export async function calculateSalary(employeeId: number): Promise<SalaryBreakdo
 }
 
 export async function getSalaryMetricsByCountry(country: string): Promise<SalaryMetricsByCountry | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  return employeeRepository.getStatsByCountry(country);
 }
 
 export async function getAvgSalaryByJobTitle(jobTitle: string): Promise<SalaryMetricsByJobTitle | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  return employeeRepository.getAvgSalaryByJobTitle(jobTitle);
 }

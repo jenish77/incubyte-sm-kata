@@ -92,11 +92,40 @@ export async function remove(id: number): Promise<boolean> {
 }
 
 export async function getStatsByCountry(country: string): Promise<SalaryMetricsByCountry | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  const db = await getDb();
+  const result = db.exec(
+    'SELECT MIN(salary) as min_s, MAX(salary) as max_s, AVG(salary) as avg_s FROM employees WHERE LOWER(country) = LOWER(?)',
+    [country]
+  );
+
+  if (result.length === 0 || result[0].values.length === 0 || result[0].values[0][0] === null) {
+    return null;
+  }
+
+  const row = result[0].values[0];
+  // Since sql.js might return database values as any, cast them appropriately
+  return {
+    country,
+    min_salary: row[0] as number,
+    max_salary: row[1] as number,
+    avg_salary: row[2] as number,
+  };
 }
 
 export async function getAvgSalaryByJobTitle(jobTitle: string): Promise<SalaryMetricsByJobTitle | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  const db = await getDb();
+  const result = db.exec(
+    'SELECT AVG(salary) as avg_s FROM employees WHERE LOWER(job_title) = LOWER(?)',
+    [jobTitle]
+  );
+
+  if (result.length === 0 || result[0].values.length === 0 || result[0].values[0][0] === null) {
+    return null;
+  }
+
+  const row = result[0].values[0];
+  return {
+    job_title: jobTitle,
+    avg_salary: row[0] as number,
+  };
 }
