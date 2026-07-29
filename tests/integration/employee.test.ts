@@ -68,4 +68,44 @@ describe('Employee CRUD', () => {
       expect(response.body.success).toBe(false);
     });
   });
+
+  describe('GET /api/employees', () => {
+    it('should return all employees', async () => {
+      await request(app).post('/api/employees').send({
+        full_name: 'Alice Johnson',
+        job_title: 'Engineer',
+        country: 'India',
+        salary: 55000,
+      });
+
+      await request(app).post('/api/employees').send({
+        full_name: 'Bob Williams',
+        job_title: 'Manager',
+        country: 'United States',
+        salary: 75000,
+      });
+
+      const response = await request(app)
+        .get('/api/employees')
+        .timeout(2000);
+
+      const body: ApiResponse<Employee[]> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data).toHaveLength(2);
+      expect(body.data![0].full_name).toBe('Alice Johnson');
+      expect(body.data![1].full_name).toBe('Bob Williams');
+    });
+
+    it('should return empty array when no employees exist', async () => {
+      const response = await request(app)
+        .get('/api/employees')
+        .timeout(2000);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveLength(0);
+    });
+  });
 });
