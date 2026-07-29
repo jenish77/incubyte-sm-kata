@@ -81,8 +81,14 @@ export async function update(id: number, employeeData: UpdateEmployeeDto): Promi
 }
 
 export async function remove(id: number): Promise<boolean> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  const existing = await findById(id);
+  if (!existing) {
+    return false;
+  }
+
+  const db = await getDb();
+  db.run('DELETE FROM employees WHERE id = ?', [id]);
+  return true;
 }
 
 export async function getStatsByCountry(country: string): Promise<SalaryMetricsByCountry | null> {

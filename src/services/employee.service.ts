@@ -27,8 +27,7 @@ export async function updateEmployee(id: number, employeeData: UpdateEmployeeDto
 }
 
 export async function deleteEmployee(id: number): Promise<boolean> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  return employeeRepository.remove(id);
 }
 
 export async function calculateSalary(employeeId: number): Promise<SalaryBreakdown | null> {

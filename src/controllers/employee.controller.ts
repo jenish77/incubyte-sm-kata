@@ -67,7 +67,19 @@ export async function updateEmployee(req: Request, res: Response, next: NextFunc
 }
 
 export async function deleteEmployee(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const id: number = parseInt(req.params.id, 10);
+    const success = await employeeService.deleteEmployee(id);
+
+    if (!success) {
+      sendError(res, HTTP_STATUS.NOT_FOUND, MESSAGES.EMPLOYEE_NOT_FOUND);
+      return;
+    }
+
+    sendSuccess(res, HTTP_STATUS.OK, null, MESSAGES.EMPLOYEE_DELETED);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function calculateSalary(req: Request, res: Response, next: NextFunction): Promise<void> {
