@@ -24,8 +24,21 @@ export async function create(employeeData: CreateEmployeeDto): Promise<Employee>
 }
 
 export async function findById(id: number): Promise<Employee | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  const db = await getDb();
+  const result = db.exec('SELECT id, full_name, job_title, country, salary FROM employees WHERE id = ?', [id]);
+
+  if (result.length === 0 || result[0].values.length === 0) {
+    return null;
+  }
+
+  const row = result[0].values[0];
+  return {
+    id: row[0] as number,
+    full_name: row[1] as string,
+    job_title: row[2] as string,
+    country: row[3] as string,
+    salary: row[4] as number,
+  };
 }
 
 export async function findAll(): Promise<Employee[]> {

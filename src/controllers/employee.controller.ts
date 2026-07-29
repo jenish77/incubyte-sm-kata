@@ -24,7 +24,19 @@ export async function createEmployee(req: Request, res: Response, next: NextFunc
 }
 
 export async function getEmployeeById(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const id: number = parseInt(req.params.id, 10);
+    const employee = await employeeService.getEmployeeById(id);
+
+    if (!employee) {
+      sendError(res, HTTP_STATUS.NOT_FOUND, MESSAGES.EMPLOYEE_NOT_FOUND);
+      return;
+    }
+
+    sendSuccess(res, HTTP_STATUS.OK, employee, MESSAGES.EMPLOYEE_FETCHED);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function getAllEmployees(req: Request, res: Response, next: NextFunction): Promise<void> {
