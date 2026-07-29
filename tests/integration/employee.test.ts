@@ -30,4 +30,42 @@ describe('Employee CRUD', () => {
       expect(body.data!.full_name).toBe('John Doe');
     });
   });
+
+  describe('GET /api/employees/:id', () => {
+    it('should retrieve an employee by id', async () => {
+      // First, create an employee
+      const createRes = await request(app)
+        .post('/api/employees')
+        .send({
+          full_name: 'Jane Smith',
+          job_title: 'Designer',
+          country: 'United States',
+          salary: 60000,
+        });
+
+      const employeeId: number = createRes.body.data.id;
+
+      // Now, fetch by id
+      const response = await request(app)
+        .get(`/api/employees/${employeeId}`)
+        .timeout(2000);
+
+      const body: ApiResponse<Employee> = response.body;
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data!.id).toBe(employeeId);
+      expect(body.data!.full_name).toBe('Jane Smith');
+      expect(body.data!.country).toBe('United States');
+    });
+
+    it('should return 404 for non-existent employee', async () => {
+      const response = await request(app)
+        .get('/api/employees/999')
+        .timeout(2000);
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+    });
+  });
 });
