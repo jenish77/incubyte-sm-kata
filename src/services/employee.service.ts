@@ -11,8 +11,7 @@ import {
 // TODO: Implement service methods via TDD
 
 export async function createEmployee(employeeData: CreateEmployeeDto): Promise<Employee> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  return employeeRepository.create(employeeData);
 }
 
 export async function getEmployeeById(id: number): Promise<Employee | null> {
