@@ -144,4 +144,39 @@ describe('Employee CRUD', () => {
       expect(response.body.success).toBe(false);
     });
   });
+
+  describe('DELETE /api/employees/:id', () => {
+    it('should delete an existing employee', async () => {
+      const createRes = await request(app).post('/api/employees').send({
+        full_name: 'Bob Ross',
+        job_title: 'Painter',
+        country: 'United States',
+        salary: 45000,
+      });
+
+      const employeeId: number = createRes.body.data.id;
+
+      const response = await request(app)
+        .delete(`/api/employees/${employeeId}`)
+        .timeout(2000);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+
+      // Verify it's gone
+      const getRes = await request(app)
+        .get(`/api/employees/${employeeId}`)
+        .timeout(2000);
+      expect(getRes.status).toBe(404);
+    });
+
+    it('should return 404 when deleting non-existent employee', async () => {
+      const response = await request(app)
+        .delete('/api/employees/999')
+        .timeout(2000);
+
+      expect(response.status).toBe(404);
+      expect(response.body.success).toBe(false);
+    });
+  });
 });
