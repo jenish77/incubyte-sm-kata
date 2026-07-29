@@ -42,8 +42,20 @@ export async function findById(id: number): Promise<Employee | null> {
 }
 
 export async function findAll(): Promise<Employee[]> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  const db = await getDb();
+  const result = db.exec('SELECT id, full_name, job_title, country, salary FROM employees');
+
+  if (result.length === 0) {
+    return [];
+  }
+
+  return result[0].values.map((row) => ({
+    id: row[0] as number,
+    full_name: row[1] as string,
+    job_title: row[2] as string,
+    country: row[3] as string,
+    salary: row[4] as number,
+  }));
 }
 
 export async function update(id: number, employeeData: UpdateEmployeeDto): Promise<Employee | null> {

@@ -19,8 +19,7 @@ export async function getEmployeeById(id: number): Promise<Employee | null> {
 }
 
 export async function getAllEmployees(): Promise<Employee[]> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  return employeeRepository.findAll();
 }
 
 export async function updateEmployee(id: number, employeeData: UpdateEmployeeDto): Promise<Employee | null> {

@@ -40,7 +40,12 @@ export async function getEmployeeById(req: Request, res: Response, next: NextFun
 }
 
 export async function getAllEmployees(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const employees = await employeeService.getAllEmployees();
+    sendSuccess(res, HTTP_STATUS.OK, employees, MESSAGES.EMPLOYEES_FETCHED);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function updateEmployee(req: Request, res: Response, next: NextFunction): Promise<void> {
