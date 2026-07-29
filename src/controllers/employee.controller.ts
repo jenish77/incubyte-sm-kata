@@ -83,7 +83,19 @@ export async function deleteEmployee(req: Request, res: Response, next: NextFunc
 }
 
 export async function calculateSalary(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const id: number = parseInt(req.params.id, 10);
+    const breakdown = await employeeService.calculateSalary(id);
+
+    if (!breakdown) {
+      sendError(res, HTTP_STATUS.NOT_FOUND, MESSAGES.EMPLOYEE_NOT_FOUND);
+      return;
+    }
+
+    sendSuccess(res, HTTP_STATUS.OK, breakdown, MESSAGES.SALARY_CALCULATED);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function getSalaryMetricsByCountry(req: Request, res: Response, next: NextFunction): Promise<void> {
