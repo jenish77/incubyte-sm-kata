@@ -49,7 +49,21 @@ export async function getAllEmployees(req: Request, res: Response, next: NextFun
 }
 
 export async function updateEmployee(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // TODO: Implement
+  try {
+    const id: number = parseInt(req.params.id, 10);
+    const employeeData = req.body as UpdateEmployeeDto;
+
+    const employee = await employeeService.updateEmployee(id, employeeData);
+
+    if (!employee) {
+      sendError(res, HTTP_STATUS.NOT_FOUND, MESSAGES.EMPLOYEE_NOT_FOUND);
+      return;
+    }
+
+    sendSuccess(res, HTTP_STATUS.OK, employee, MESSAGES.EMPLOYEE_UPDATED);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function deleteEmployee(req: Request, res: Response, next: NextFunction): Promise<void> {

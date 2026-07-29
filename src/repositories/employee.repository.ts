@@ -59,8 +59,25 @@ export async function findAll(): Promise<Employee[]> {
 }
 
 export async function update(id: number, employeeData: UpdateEmployeeDto): Promise<Employee | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  const existing = await findById(id);
+  if (!existing) {
+    return null;
+  }
+
+  const updated = {
+    full_name: employeeData.full_name !== undefined ? employeeData.full_name : existing.full_name,
+    job_title: employeeData.job_title !== undefined ? employeeData.job_title : existing.job_title,
+    country: employeeData.country !== undefined ? employeeData.country : existing.country,
+    salary: employeeData.salary !== undefined ? employeeData.salary : existing.salary,
+  };
+
+  const db = await getDb();
+  db.run(
+    'UPDATE employees SET full_name = ?, job_title = ?, country = ?, salary = ? WHERE id = ?',
+    [updated.full_name, updated.job_title, updated.country, updated.salary, id]
+  );
+
+  return { id, ...updated };
 }
 
 export async function remove(id: number): Promise<boolean> {

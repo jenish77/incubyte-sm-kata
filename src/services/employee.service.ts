@@ -23,8 +23,7 @@ export async function getAllEmployees(): Promise<Employee[]> {
 }
 
 export async function updateEmployee(id: number, employeeData: UpdateEmployeeDto): Promise<Employee | null> {
-  // TODO: Implement
-  throw new Error('Not implemented');
+  return employeeRepository.update(id, employeeData);
 }
 
 export async function deleteEmployee(id: number): Promise<boolean> {
